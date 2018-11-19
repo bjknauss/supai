@@ -31,7 +31,7 @@ class Supai(discord.Client):
         async with aiohttp.ClientSession() as session:
             webhook = discord.Webhook.from_url(target.webhook, adapter=discord.AsyncWebhookAdapter(session))
             if len(msg.content) > 0 or len(msg.embeds) > 0:
-                await webhook.send(content=msg.content, username=str(msg.author), avatar_url=msg.author.avatar_url, embeds=msg.embeds)
+                await webhook.send(content=msg.clean_content, username=str(msg.author), avatar_url=msg.author.avatar_url, embeds=msg.embeds)
             for attach in msg.attachments:
                 fp = io.BytesIO()
                 await attach.save(fp)

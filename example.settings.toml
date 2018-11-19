@@ -1,6 +1,5 @@
 [development]
-
-token = "<YOUR BOT TOKEN>"
+    token = "<YOUR BOT TOKEN>"
 
     [[development.targets]]
     name = "Example Channel"
