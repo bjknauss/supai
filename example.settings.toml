@@ -1,0 +1,8 @@
+[development]
+
+token = "<YOUR BOT TOKEN>"
+
+    [[development.targets]]
+    name = "Example Channel"
+    channel = 12345 # Target Channel
+    webhook = "<OUTPUT WEBHOOK URL HERE>"
