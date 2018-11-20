@@ -27,13 +27,15 @@ class Supai(discord.Client):
         self.targets = targets
 
     def mentions_embed(self, msg: discord.Message) -> discord.Embed:
-        '''Builds an Embed object for mentions which includes the display name and user id of the mentions.'''
-        mentions: List[discord.abc.User] = [mention for mention in msg.mentions if mention.name != mention.display_name][:5]
+        '''Builds an Embed object for mentions which includes the display name and user id of the mentions. '''
+        mentions = msg.mentions[:24]
         if len(mentions):
             embed = discord.Embed()
             for mention in mentions:
                 name = f'{mention.name}#{mention.discriminator}'
-                value = f'@{mention.display_name}\n{mention.id}'
+                value = str(mention.id)
+                if(mention.name != mention.display_name):
+                    value += f'\n@{mention.display_name}'
                 embed.add_field(name=name, value=value, inline=True)
             return embed
         return None
@@ -46,7 +48,7 @@ class Supai(discord.Client):
                 mention_embed = self.mentions_embed(msg)
                 if mention_embed:
                     msg.embeds.append(mention_embed)
-                await webhook.send(content=msg.clean_content, username=str(msg.author), avatar_url=msg.author.avatar_url, embeds=msg.embeds)
+                await webhook.send(content=msg.content, username=str(msg.author), avatar_url=msg.author.avatar_url, embeds=msg.embeds)
             for attach in msg.attachments:
                 fp = io.BytesIO()
                 await attach.save(fp)
