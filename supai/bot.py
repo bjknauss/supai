@@ -44,16 +44,25 @@ class Supai(discord.Client):
         '''Sends the message to the webhook mimicking the original message as close as possible. Includes message content, embeds, and files.'''
         async with aiohttp.ClientSession() as session:
             webhook = discord.Webhook.from_url(target.webhook, adapter=discord.AsyncWebhookAdapter(session))
-            if len(msg.content) > 0 or len(msg.embeds) > 0:
+            name = str(msg.author.name)
+            if len(name) < 3:
+                print(f'MESSAGE AUTHOR TOO SHORT... {name}')
+                print(msg)
+
+            if len(name) > 32:
+                print(f'MESSAGE AUTHOR TOO LONG... {name}')
+                print(msg)
+
+            if len(msg.content) or len(msg.embeds):
                 mention_embed = self.mentions_embed(msg)
                 if mention_embed:
                     msg.embeds.append(mention_embed)
-                await webhook.send(content=msg.content, username=str(msg.author), avatar_url=msg.author.avatar_url, embeds=msg.embeds)
+                await webhook.send(content=msg.content, username=name, avatar_url=msg.author.avatar_url, embeds=msg.embeds)
             for attach in msg.attachments:
                 fp = io.BytesIO()
                 await attach.save(fp)
                 attach_file = discord.File(fp, filename=attach.filename)
-                await webhook.send(username=str(msg.author), file=attach_file, avatar_url=msg.author.avatar_url)
+                await webhook.send(username=name, file=attach_file, avatar_url=msg.author.avatar_url)
                 fp.close()
 
 
