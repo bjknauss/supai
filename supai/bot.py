@@ -4,6 +4,7 @@ import aiohttp
 from supai import target
 from typing import List
 import io
+from datetime import datetime
 
 class Supai(discord.Client):
     '''Supai is a Discord logging bot that uses webhooks to log channel activity.'''
@@ -12,10 +13,16 @@ class Supai(discord.Client):
         kwargs["fetch_offline_members"] = True
         super().__init__(*args, **kwargs)
         self.targets: List[target.Target] = []
+        self.targets_initialized = False
 
 
     def init_targets(self):
         targets = []
+        if self.targets_initialized:
+            print(f'Targets have already been initialized... ')
+            print(datetime.now())
+        else:
+            print('Initializing Targets...')
         for t in settings.TARGETS:
             print(t)
             print(type(t))
@@ -25,6 +32,7 @@ class Supai(discord.Client):
             targets.append(targ)
 
         self.targets = targets
+        self.targets_initialized = True
 
     def mentions_embed(self, msg: discord.Message) -> discord.Embed:
         '''Builds an Embed object for mentions which includes the display name and user id of the mentions. '''
@@ -54,10 +62,11 @@ class Supai(discord.Client):
                 print(msg)
 
             if len(msg.content) or len(msg.embeds):
+                content=msg.clean_content if msg.mention_everyone else msg.content
                 mention_embed = self.mentions_embed(msg)
                 if mention_embed:
                     msg.embeds.append(mention_embed)
-                await webhook.send(content=msg.content, username=name, avatar_url=msg.author.avatar_url, embeds=msg.embeds)
+                await webhook.send(content=content, username=name, avatar_url=msg.author.avatar_url, embeds=msg.embeds)
             for attach in msg.attachments:
                 fp = io.BytesIO()
                 await attach.save(fp)
